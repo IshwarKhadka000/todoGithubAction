@@ -2,7 +2,7 @@ name: Backend Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   
 
 jobs:
@@ -12,13 +12,24 @@ jobs:
     runs-on: [self-hosted, linux, ARM64]
 
     steps:
+    - name: Checkout source code
     - uses: actions/checkout@v4
+    
     - name: Build the Docker image of backend
       run: |
         cd Backend
         docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:hash -f Dockerfile.backend .
-        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
-        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable
-        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:hash
-        
-      
+  tagandpush:
+    runs-on: [self-hosted, linux, ARM64]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    steps:
+      - name: Tag Docker Image
+        run: |
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            TAG="stable"
+          else
+            TAG="dev"
+          fi
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$TAG
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
