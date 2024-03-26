@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  build:
+  build_docker_image:
 
     runs-on: [self-hosted, linux, ARM64]
 
@@ -18,23 +18,27 @@ jobs:
     - name: Build the Docker image of backend
       run: |
         cd Backend
-        docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:hash -f Dockerfile.backend .
-  tagandpush:
+        docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }} -f Dockerfile.backend .
+  
+  tag_and_push_prod:
     runs-on: [self-hosted, linux, ARM64]
-    
-    
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-    
+    if: github.ref == 'refs/heads/main'
     steps:
-    
-    - name: Tag Docker Image
-    - uses: actions/checkout@v4
-      run: |
-        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
-        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-          TAG="stable"
-        else
-          TAG="dev"
-        fi
-        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$TAG
-        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
+      - name: Tag Docker Image for Main
+        run: |
+          docker tag  ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:stable
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
+
+  
+  tag_and_push_dev:
+    runs-on: [self-hosted, linux, ARM64]
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - name: Tag Docker Image for Dev
+        run: |
+          docker tag  ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:dev ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:dev
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
