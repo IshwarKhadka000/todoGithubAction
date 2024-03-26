@@ -26,6 +26,6 @@ jobs:
         push: true
         tags: |
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable
-          ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
+          ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
         
     
