@@ -29,7 +29,7 @@ jobs:
           echo "Skipping tag for branch $GITHUB_REF"
           exit 0
         fi
-        echo "::set-output name=tag::$TAG"
+        echo "{tag}={$TAG}" >> $GITHUB_OUTPUT
           
     - name: Build and push
       uses: docker/build-push-action@v5
