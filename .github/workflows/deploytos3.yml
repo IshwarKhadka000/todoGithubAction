@@ -15,4 +15,4 @@ jobs:
       - name: Build frontend
         run: |
           cd Frontend
-          yarn build
+          yarn build --prod
