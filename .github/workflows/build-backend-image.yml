@@ -16,6 +16,5 @@ jobs:
     - name: Build the Docker image of backend
       run: |
         cd Backend
-        sudo su ishwar -i
         docker build -t ishwarkhadka/backend:stable -t ishwarkhadka/backend:hash -f Dockerfile.backend .
       
