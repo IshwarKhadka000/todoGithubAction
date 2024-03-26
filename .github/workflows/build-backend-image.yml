@@ -3,6 +3,7 @@ name: Backend Docker Image CI
 on:
   push:
     branches: [ "main", "dev" ]
+  workflow_dispatch:
   
 
 jobs:
