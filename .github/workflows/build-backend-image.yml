@@ -40,3 +40,20 @@ jobs:
         tags: |
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
+  
+
+  IncreasePackageVersion:
+    runs-on: [self-hosted, linux, ARM64]
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@dev
+        
+      - name: 'change version'
+        run: |
+          - cd Backend
+          - npm version patch
+          - git add package.json
+          - git commit -m "Increase version of backend"
+          - git push origin main
+         
