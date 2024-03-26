@@ -16,6 +16,9 @@ jobs:
     - name: Build the Docker image of backend
       run: |
         cd Backend
-        docker build -t ishwarkhadka/backend:stable -t ishwarkhadka/backend:hash -f Dockerfile.backend .
+        docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:hash -f Dockerfile.backend .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
+        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable
+        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:hash
+        
       
