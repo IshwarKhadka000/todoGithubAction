@@ -2,6 +2,7 @@ name: Frontend Deployment
 on:
   push:
     branches: [ "frontend" ]
+    
 jobs:
   build_frontend:
     name: Build frontend
