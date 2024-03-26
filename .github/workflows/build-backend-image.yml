@@ -21,6 +21,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
-        context:  "{{defaultContext}}:Backend/Dockerfile.backend"
+        context:  "{{defaultContext}}:Backend"
+        dockerfile: Dockerfile.backend
     
     
