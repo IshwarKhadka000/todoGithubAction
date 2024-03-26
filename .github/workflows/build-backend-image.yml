@@ -17,4 +17,5 @@ jobs:
       run: |
         cd Backend
         docker build -t ishwarkhadka/backend:stable -t ishwarkhadka/backend:hash -f Dockerfile.backend .
+        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
       
