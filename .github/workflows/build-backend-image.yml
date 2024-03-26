@@ -3,49 +3,40 @@ name: Backend Docker Image CI
 on:
   push:
     branches: [ "main", "dev" ]
+  
 
 jobs:
-  determine_tag:
+  build_docker_image:
     runs-on: [self-hosted, linux, ARM64]
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-      
-      - name: Determine tag based on branch
-        id: set_tag
-        run: |
-          if [ "$GITHUB_REF" == "refs/heads/main" ]; then
-            echo "::set-output name=tag::stable"
-          elif [ "$GITHUB_REF" == "refs/heads/dev" ]; then
-            echo "::set-output name=tag::dev"
-          else
-            echo "Skipping tag for branch $GITHUB_REF"
-            exit 0
-          fi
-
-  build_and_push_image:
-    runs-on: [self-hosted, linux, ARM64]
-    needs: determine_tag
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context:  "{{defaultContext}}:Backend"
-          file: Dockerfile.backend
-          push: true
-          tags: |
-            TAG=$(echo "${{ needs.determine_tag.outputs.tag }}")
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${TAG}
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
+    - name: Checkout source code
+      uses: actions/checkout@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Determine tag based on branch
+      id: determine_tag
+      run: |
+        if [ "$GITHUB_REF" == "refs/heads/main" ]; then
+          TAG="stable"
+        elif [ "$GITHUB_REF" == "refs/heads/dev" ]; then
+          TAG="dev"
+        else
+          echo "Skipping tag for branch $GITHUB_REF"
+          exit 0
+        fi
+        echo "::set-output name=tag::$TAG"
+          
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context:  "{{defaultContext}}:Backend"
+        file: Dockerfile.backend
+        push: true
+        tags: |
+          ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
+          ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
