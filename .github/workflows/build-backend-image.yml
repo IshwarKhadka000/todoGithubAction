@@ -25,7 +25,7 @@ jobs:
         file: Dockerfile.backend
         push: true
         tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.ref == 'refs/heads/main' && 'stable' || 'dev' }}
+          ${{ var.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.ref == 'refs/heads/main' && 'stable' || 'dev' }}
           if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
         
