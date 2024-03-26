@@ -21,9 +21,14 @@ jobs:
         docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:stable -t ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:hash -f Dockerfile.backend .
   tagandpush:
     runs-on: [self-hosted, linux, ARM64]
+    
+    
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    
     steps:
+    
     - name: Tag Docker Image
+    - uses: actions/checkout@v4
       run: |
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
         if [ "${{ github.ref }}" = "refs/heads/main" ]; then
