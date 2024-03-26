@@ -23,13 +23,13 @@ jobs:
     runs-on: [self-hosted, linux, ARM64]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     steps:
-      - name: Tag Docker Image
-        run: |
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            TAG="stable"
-          else
-            TAG="dev"
-          fi
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$TAG
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
+    - name: Tag Docker Image
+      run: |
+        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
+        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          TAG="stable"
+        else
+          TAG="dev"
+        fi
+        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$TAG
+        docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:$(git rev-parse --short "$GITHUB_SHA")
