@@ -42,7 +42,11 @@ jobs:
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
   
-    
+    - name: Set Git user information
+      run: |
+        git config user.email ${{ secrets.GIT_EMAIL }}
+        git config user.name ${{ secrets.GIT_USERNAME }}
+        
     - name: Increase Package Version
       run: |
         cd Backend
