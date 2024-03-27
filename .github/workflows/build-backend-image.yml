@@ -48,7 +48,8 @@ jobs:
         git config user.email ${{ vars.GIT_EMAIL }}
         git config user.name ${{ vars.GIT_USERNAME }}
         npm version patch
-        git add package.json
-        git commit -m "Increase version in backend"
+        cd ..
+        git add .
+        git commit -m "[skip ci] Increase version in backend"
         git push 
    
