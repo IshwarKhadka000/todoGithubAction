@@ -18,6 +18,19 @@ jobs:
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Determine tag based on branch
+      id: determine_tag
+      run: |
+        if [ "$GITHUB_REF" == "refs/heads/main" ]; then
+          TAG="stable"
+        elif [ "$GITHUB_REF" == "refs/heads/dev" ]; then
+          TAG="dev"
+        else
+          echo "Skipping tag for branch $GITHUB_REF"
+          exit 0
+        fi
+        echo "::set-output name=tag::$TAG"
+          
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
@@ -25,8 +38,5 @@ jobs:
         file: Dockerfile.backend
         push: true
         tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:${{ github.ref == 'refs/heads/main' && 'stable' || 'dev' }}
-          if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+          ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
-        
-    
