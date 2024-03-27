@@ -15,6 +15,8 @@ jobs:
     
     - name: Checkout source code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GIT_TOKEN }}
     - name: Increase Package Version
       run: |
         cd Backend
