@@ -28,7 +28,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
           cd Frontend
-          cp --recursive dist s3://ishwar-github-actions-bucket/
+          aws s3 cp --recursive dist s3://ishwar-github-actions-bucket/
 
       - name: Invalidate CloudFront
         uses: chetan/invalidate-cloudfront-action@v2
