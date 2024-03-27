@@ -7,11 +7,24 @@ on:
   
 
 jobs:
+
   build_docker_image:
+  
     runs-on: [self-hosted, linux, ARM64]
     steps:
+    
     - name: Checkout source code
       uses: actions/checkout@v4
+    - name: Increase Package Version
+      run: |
+        cd Backend
+        git config --global user.name ${{ vars.GIT_EMAIL }}
+        git config --global user.name ${{ vars.GIT_USERNAME }}
+        npm version patch
+        cd ..
+        git add .
+        git commit -m "[skip ci] Increase version in backend"
+        git push 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     - name: Login to Docker Hub
@@ -42,14 +55,5 @@ jobs:
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
                   
-    - name: Increase Package Version
-      run: |
-        cd Backend
-        git config user.email ${{ vars.GIT_EMAIL }}
-        git config user.name ${{ vars.GIT_USERNAME }}
-        npm version patch
-        cd ..
-        git add .
-        git commit -m "[skip ci] Increase version in backend"
-        git push 
+    
    
