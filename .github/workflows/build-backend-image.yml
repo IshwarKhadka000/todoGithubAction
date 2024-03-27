@@ -42,19 +42,19 @@ jobs:
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
   
+    - name: Invalidate CloudFront
+      env:
+        AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-  IncreasePackageVersion:
-    runs-on: [self-hosted, linux, ARM64]
-    if: github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@dev
-        
-      - name: 'change version'
         run: |
-          - cd Backend
-          - npm version patch
-          - git add package.json
-          - git commit -m "Increase version of backend"
-          - git push origin main
-         
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+  
+    - name: Increase Package Version
+      run: |
+        cd Backend
+        npm version patch
+        git add package.json
+        git commit -m "Increase version in backend"
+        git push origin main
