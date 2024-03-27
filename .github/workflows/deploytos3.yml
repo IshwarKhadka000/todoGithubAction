@@ -19,18 +19,20 @@ jobs:
           yarn build 
  
   deploy_to_s3:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, ARM64]
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
-        - run: cd Frontend
-        - name: Deploy
-          uses: lbertenasco/s3-deploy@v1
-          with:
-            folder: dist
-            bucket: ${{ secrets.S3_BUCKET }}
-            dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-            invalidation: / *
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - run: cd Frontend
+      - name: Deploy to s3
+        uses: lbertenasco/s3-deploy@v1
+        with:
+          folder: dist
+          bucket: ${{ secrets.S3_BUCKET }}
+          dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          invalidation: / *
           
