@@ -50,11 +50,11 @@ jobs:
 
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-  
-    - name: Increase Package Version
+    - name: Determine tag based on branch
       run: |
         cd Backend
         npm version patch
         git add package.json
         git commit -m "Increase version in backend"
         git push origin main
+   
