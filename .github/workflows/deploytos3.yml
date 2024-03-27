@@ -16,17 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GIT_TOKEN }}
-      - name: Increase Package Version
-        run: |
-          cd Frontend
-          git config --global user.name ${{ vars.GIT_EMAIL }}
-          git config --global user.name ${{ vars.GIT_USERNAME }}
-          npm version patch
-          cd ..
-          git add .
-          git commit -m "[skip ci] Increase version in frontend"
-          git push -u origin frontend
-        
+      
       
       - name: Install dependencies and build
         run: |
@@ -52,3 +42,15 @@ jobs:
 
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          
+      - name: Increase Package Version
+        run: |
+          cd Frontend
+          git config --global user.name ${{ vars.GIT_EMAIL }}
+          git config --global user.name ${{ vars.GIT_USERNAME }}
+          npm version patch
+          cd ..
+          git add .
+          git commit -m "[skip ci] Increase version in frontend"
+          git push -u origin frontend
+        
