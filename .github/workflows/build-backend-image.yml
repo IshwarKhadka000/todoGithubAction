@@ -41,9 +41,7 @@ jobs:
         tags: |
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
-  
-    - name: Set Git user information
-                
+                  
     - name: Increase Package Version
       run: |
         cd Backend
