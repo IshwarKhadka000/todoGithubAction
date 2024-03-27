@@ -17,16 +17,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GIT_TOKEN }}
-    - name: Increase Package Version
-      run: |
-        cd Backend
-        git config --global user.name ${{ vars.GIT_EMAIL }}
-        git config --global user.name ${{ vars.GIT_USERNAME }}
-        npm version patch
-        cd ..
-        git add .
-        git commit -m "[skip ci] Increase version in backend"
-        git push 
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     - name: Login to Docker Hub
@@ -56,6 +47,15 @@ jobs:
         tags: |
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ steps.determine_tag.outputs.tag }}
           ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
-                  
+    - name: Increase Package Version
+      run: |
+        cd Backend
+        git config --global user.name ${{ vars.GIT_EMAIL }}
+        git config --global user.name ${{ vars.GIT_USERNAME }}
+        npm version patch
+        cd ..
+        git add .
+        git commit -m "[skip ci] Increase version in backend"
+        git push    
     
    
