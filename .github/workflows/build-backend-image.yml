@@ -53,5 +53,5 @@ jobs:
         npm version patch
         git add package.json
         git commit -m "Increase version in backend"
-        git push origin main
+        git push -u origin dev
    
